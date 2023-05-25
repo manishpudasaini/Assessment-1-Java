@@ -1,5 +1,6 @@
 package com.example.assessment1.controller;
 
+import com.example.assessment1.exception.ApiRequestException;
 import com.example.assessment1.model.Book;
 import com.example.assessment1.service.BookSevice;
 import org.springframework.http.HttpStatus;
@@ -36,42 +37,33 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Short id) {
         Optional<Book> book = bookSevice.getBookById(id);
-        return book.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return book.map(ResponseEntity::ok).get();
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Short id, @RequestBody Book book) {
-        try {
             Book updatedBook = bookSevice.updateBook(id,book);
             return ResponseEntity.ok(updatedBook);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Short id) {
+    public ResponseEntity<String> deleteBook(@PathVariable Short id) {
         bookSevice.deleteBook(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Book Deleted successfulltY");
     }
     @PutMapping("/activate/{id}")
     public ResponseEntity<Void> activateBook(@PathVariable Short id) {
-        try {
+
             bookSevice.activateBook(id);
             return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+
     }
 
     @PutMapping("/deactivate/{id}")
     public ResponseEntity<Void> deactivateBook(@PathVariable Short id) {
-        try {
             bookSevice.deactivateBook(id);
             return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 
 }

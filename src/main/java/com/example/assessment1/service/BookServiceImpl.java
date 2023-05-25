@@ -1,5 +1,6 @@
 package com.example.assessment1.service;
 
+import com.example.assessment1.exception.ApiRequestException;
 import com.example.assessment1.model.Book;
 import com.example.assessment1.repo.BookRepository;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class BookServiceImpl implements BookSevice{
 
     @Override
     public Optional<Book> getBookById(Short id) {
+        if(bookRepository.findById(id).isEmpty()){
+            throw new ApiRequestException("Book having this id not found");
+        }
         return bookRepository.findById(id);
     }
 
@@ -41,13 +45,19 @@ public class BookServiceImpl implements BookSevice{
             book.setId(id);
             return bookRepository.save(book);
         } else {
-            throw new IllegalArgumentException("Book having this " + id + " not found");
+            throw new ApiRequestException("Book having this id " + id + " not found");
         }
     }
 
     @Override
     public void deleteBook(Short id) {
-        bookRepository.deleteById(id);
+
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isPresent()){
+            bookRepository.deleteById(id);
+        }else {
+            throw new ApiRequestException("Book having this id " + id + " not found");
+        }
     }
 
     @Override
@@ -58,7 +68,7 @@ public class BookServiceImpl implements BookSevice{
             book.setActive(true);
             bookRepository.save(book);
         } else {
-            throw new IllegalArgumentException("Book having this " + id + " not found");
+            throw new ApiRequestException("Book having this id" + id + " not found");
         }
     }
 
@@ -70,7 +80,7 @@ public class BookServiceImpl implements BookSevice{
             book.setActive(false);
             bookRepository.save(book);
         } else {
-            throw new IllegalArgumentException("Book having this " + id + " not found");
+            throw new ApiRequestException("Book having this id" + id + " not found");
         }
     }
 }
